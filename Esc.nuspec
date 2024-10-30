@@ -30,6 +30,7 @@
   -->
   
 	<files>
+		<file src="README_esc.md" target="README.md" />
 		<file src="contentFiles\win64\esc.exe" target="contentFiles\any\any\esc_win64.exe" />
 		<file src="contentFiles\linux64\esc" target="contentFiles\any\any\esc_linux64" />
 		<file src="contentFiles\darwin64\esc" target="contentFiles\any\any\esc_darwin64" />
