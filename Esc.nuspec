@@ -4,8 +4,6 @@
     <id>Esc</id>
     <version>$version$</version>
     <title>Esc</title>
-    <authors>todo</authors>
-    <owners>todo</owners>
     <tags>pulumi esc</tags>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <!-- <licenseUrl>https://github.com/envkey/envkey-dotnet/blob/master/LICENCE.txt</licenseUrl> -->

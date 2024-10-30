@@ -9,6 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Esc.Sdk.Cli", "src\Esc.Sdk.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Esc.Sdk.Cli.Tests", "src\Esc.Sdk.Cli.Tests\Esc.Sdk.Cli.Tests.csproj", "{E51630E3-072C-4DDC-8C40-2B416A80F8D0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{C49DD74B-E4DF-4C5A-903C-DFD6F7C99BC7}"
+	ProjectSection(SolutionItems) = preProject
+		Esc.nuspec = Esc.nuspec
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
