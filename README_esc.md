@@ -1,6 +1,6 @@
 # extensions-configuration-envkey
 
-based on: https://github.com/Azure/AppConfiguration-DotnetProvider
+based on: https://www.nuget.org/packages/EnvKey
 
 ```
 
