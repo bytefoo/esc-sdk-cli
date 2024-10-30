@@ -5,7 +5,7 @@
 		<id>Esc</id>
 		<version>$version$</version>
 		<authors>Esc.Sdk.Cli</authors>
-		<readme>README_esc.md</readme>
+		<readme>README.md</readme>
 		<title>Esc</title>
 		<tags>pulumi esc</tags>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
