@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{C49DD74B-E4DF-4C5A-903C-DFD6F7C99BC7}"
 	ProjectSection(SolutionItems) = preProject
 		Esc.nuspec = Esc.nuspec
+		README_esc.md = README_esc.md
 	EndProjectSection
 EndProject
 Global
