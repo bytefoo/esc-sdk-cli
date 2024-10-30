@@ -51,7 +51,6 @@ class Build : NukeBuild
             ArtifactsDirectory.DeleteDirectory();
             SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(path => path.DeleteDirectory());
             TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(path => path.DeleteDirectory());
-            OutputDirectory.CreateOrCleanDirectory();
         });
 
     Target Compile => _ => _
@@ -59,7 +58,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetBuild(s => s
-                .SetProjectFile(Solution)
+                .SetProjectFile(Solution.GetProject("Esc.Sdk.Cli"))
                 .SetConfiguration(Configuration)
                 .EnableNoRestore());
 
@@ -127,8 +126,6 @@ class Build : NukeBuild
     [Parameter]
     string NuGetSource => "https://api.nuget.org/v3/index.json";
 
-    AbsolutePath OutputDirectory => RootDirectory / "output";
-
     Target Pack => _ => _
         .DependsOn(Download, Compile)
         .Produces(PackagesDirectory / "*.nupkg")
@@ -175,7 +172,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             DotNetRestore(s => s
-                .SetProjectFile(Solution));
+                .SetProjectFile(Solution.GetProject("Esc.Sdk.Cli")));
         });
 
     AbsolutePath SourceDirectory => RootDirectory / "src";

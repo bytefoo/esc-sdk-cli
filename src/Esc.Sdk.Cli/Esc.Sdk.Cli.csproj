@@ -8,19 +8,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!--<PackageReference Include="EnvKey" Version="2.4.3.1">
-			<PrivateAssets>none</PrivateAssets>
-		</PackageReference>-->
-		<PackageReference Include="Nerdbank.GitVersioning" Version="3.6.146">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="System.Text.Json" Version="8.0.5" />
-
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+	  <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.146">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+		<PackageReference Include="System.Text.Json" Version="8.0.5" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+	
 	</ItemGroup>
 
 </Project>
