@@ -24,8 +24,8 @@
     </contentFiles>
   </metadata>
   <!--
-  what the nuspec is actually doing is moving the contentFiles\any\any\envkey-source.exe to contentFiles\any\any\envkey-source.exe so 
-  that the <contentFiles> node can pick the file from any\any\envkey-source.exe (without contentFiles). This is very confusing but works...
+  what the nuspec is actually doing is moving the contentFiles\any\any\esc.exe to contentFiles\any\any\esc.exe so 
+  that the <contentFiles> node can pick the file from any\any\esc.exe (without contentFiles). This is very confusing but works...
   -->
   <files>
     <file src="contentFiles\win64\esc.exe" target="contentFiles\any\any\esc_win64.exe" />
