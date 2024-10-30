@@ -65,10 +65,9 @@ namespace Esc.Sdk.Cli
                 case OsPlatformType.Linux:
                     escExecutable = "esc_linux64";
                     break;
-                //todo: handld amd64 and arm64
-                //case OsPlatformType.Osx:
-                //    escExecutable = "esc_darwin64";
-                //    break;
+                case OsPlatformType.Osx:
+                    escExecutable = "esc_darwin64";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
