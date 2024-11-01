@@ -37,8 +37,7 @@ namespace Esc.Sdk.Cli
         ///     Overrides the environment key to use.
         ///     Default is the "PULUMI_ACCESS_TOKEN" environment variable.
         /// </summary>
-        public string? PulumiAccessToken { get; set; } =
-            Environment.GetEnvironmentVariable("PULUMI_ACCESS_TOKEN", EnvironmentVariableTarget.Process);
+        public string? PulumiAccessToken { get; set; }
 
         /// <summary>
         ///     Timeout in seconds for http requests.

@@ -12,14 +12,13 @@ public class UnitTest1
         try
         {
             var escPath = "D:\\bytefoo\\esc-sdk-cli\\contentFiles\\win64\\esc.exe";
-
             var options = new EscOptions
             {
                 EscPath = escPath,
                 OrgName = "MyOrg",
                 ProjectName = "Sandbox",
                 EnvironmentName = "test",
-                //PulumiAccessToken = "",
+                PulumiAccessToken = Environment.GetEnvironmentVariable("PULUMI_ACCESS_TOKEN", EnvironmentVariableTarget.Process),
             };
 
             var escConfig = new EscConfig(options);
