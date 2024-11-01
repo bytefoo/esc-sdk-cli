@@ -11,20 +11,22 @@ public class UnitTest1
     {
         try
         {
-            var escPath = "D:\\bytefoo\\esc-sdk-cli\\esc_win64.exe";
+            var escPath = "D:\\bytefoo\\esc-sdk-cli\\contentFiles\\win64\\esc.exe";
 
             var options = new EscOptions
             {
                 EscPath = escPath,
-                OrgName = "jetlinx",
-                ProjectName = "AppSettings",
-                EnvironmentName = "appsettings-test",
+                OrgName = "MyOrg",
+                ProjectName = "Sandbox",
+                EnvironmentName = "test",
                 //PulumiAccessToken = "",
             };
 
             var escConfig = new EscConfig(options);
 
-            var success = escConfig.TryLoad(out var config);
+            //escConfig.Set("Foo_Bar", "asdf123");
+            //var success = escConfig.TryLoad(out var config);
+            var success = escConfig.TryLoad(out var config, out var exception);
         }
         catch (Exception e)
         {

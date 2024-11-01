@@ -19,5 +19,7 @@ namespace Esc.Sdk.Cli
         /// <param name="forceUpdate">Defines if existing environment variables should be updated.</param>
         /// <exception cref="InvalidOperationException">In case of any error. See inner exception for more details.</exception>
         void Load(bool forceUpdate);
+
+        void Set(string path, string value);
     }
 }

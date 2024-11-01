@@ -46,7 +46,7 @@ namespace Esc.Sdk.Cli
         /// </summary>
         public int Timeout { get; set; } = 15;
 
-        internal string? GetEscExecutable()
+        internal string GetEscExecutable()
         {
             if (EscPath != null)
             {
@@ -74,7 +74,12 @@ namespace Esc.Sdk.Cli
 
             var fullEscExePath = Path.Combine(searchPath, escExecutable);
             Trace.WriteLine($"Using '{fullEscExePath}' as esc executable.");
-
+            
+            if (!File.Exists(fullEscExePath))
+            {
+                throw new FileNotFoundException("Esc executable was not found. Please specify the full path via the options.", fullEscExePath);
+            }
+            
             return fullEscExePath;
         }
 
