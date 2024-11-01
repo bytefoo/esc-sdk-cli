@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		README_esc.md = README_esc.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Esc.Sdk.Cli.Tests", "src\Esc.Sdk.Cli.Tests\Esc.Sdk.Cli.Tests.csproj", "{C6920270-56B1-4814-A99D-95397509D142}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,10 +25,6 @@ Global
 		{960B58CE-8A72-4E32-BBA0-90CFEEC89012}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{960B58CE-8A72-4E32-BBA0-90CFEEC89012}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{960B58CE-8A72-4E32-BBA0-90CFEEC89012}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6920270-56B1-4814-A99D-95397509D142}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6920270-56B1-4814-A99D-95397509D142}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6920270-56B1-4814-A99D-95397509D142}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6920270-56B1-4814-A99D-95397509D142}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
