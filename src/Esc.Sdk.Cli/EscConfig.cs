@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 
 namespace Esc.Sdk.Cli
@@ -36,30 +39,30 @@ namespace Esc.Sdk.Cli
             }
         }
 
-        public void Set(string path, string value)
-        {
-            var fileName = _options.GetEscExecutable();
+        //public void Set(string path, string value)
+        //{
+        //    var fileName = _options.GetEscExecutable();
 
-            if (string.IsNullOrEmpty(_options.PulumiAccessToken))
-            {
-                throw new InvalidOperationException(
-                    "Pulumi access token not found. Please set via environment variable as 'PULUMI_ACCESS_TOKEN' or configure via the options.");
-            }
+        //    if (string.IsNullOrEmpty(_options.PulumiAccessToken))
+        //    {
+        //        throw new InvalidOperationException(
+        //            "Pulumi access token not found. Please set via environment variable as 'PULUMI_ACCESS_TOKEN' or configure via the options.");
+        //    }
 
-            var runProcessResult = RunProcess.Run(
-                fileName,
-                $"env set {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName} {path} {value}",
-                Environment.CurrentDirectory,
-                new Dictionary<string, string> {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
-            );
+        //    var runProcessResult = RunProcess.Run(
+        //        fileName,
+        //        $"env set {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName} {path} {value}",
+        //        Environment.CurrentDirectory,
+        //        new Dictionary<string, string> {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
+        //    );
 
-            var standardError = runProcessResult.StandardError;
+        //    var standardError = runProcessResult.StandardError;
 
-            if (!string.IsNullOrEmpty(standardError))
-            {
-                throw new InvalidOperationException(standardError);
-            }
-        }
+        //    if (!string.IsNullOrEmpty(standardError))
+        //    {
+        //        throw new InvalidOperationException(standardError);
+        //    }
+        //}
 
         internal string InnerLoadRaw()
         {
@@ -71,21 +74,54 @@ namespace Esc.Sdk.Cli
                     "Pulumi access token not found. Please set via environment variable as 'PULUMI_ACCESS_TOKEN' or configure via the options.");
             }
 
-            var runProcessResult = RunProcess.Run(
-                fileName,
-                $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}",
-                Environment.CurrentDirectory,
-                new Dictionary<string, string> {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
-            );
+            var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
+           
+            var processStartInfo = new ProcessStartInfo(fileName, arguments)
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                StandardErrorEncoding = Encoding.UTF8,
+                StandardOutputEncoding = Encoding.UTF8,
+                EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
+            };
 
-            var standardError = runProcessResult.StandardError;
+            var process = new Process {StartInfo = processStartInfo};
 
-            if (!string.IsNullOrEmpty(standardError))
+            var outputBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
+
+            process.OutputDataReceived += (sender, args) => outputBuilder.AppendLine(args.Data);
+            process.ErrorDataReceived += (sender, args) => errorBuilder.AppendLine(args.Data);
+
+            process.Start();
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
+            var successfulExit =
+                process.WaitForExit((int) TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
+
+            if (!successfulExit)
+            {
+                throw new InvalidOperationException("Esc process timed out.");
+            }
+
+            var standardError = errorBuilder.ToString();
+            if (!string.IsNullOrEmpty(standardError.Trim()))
             {
                 throw new InvalidOperationException(standardError);
             }
 
-            return runProcessResult.StandardOutput;
+            var output = outputBuilder.ToString();
+            if (!output.StartsWith("{"))
+            {
+                throw new InvalidOperationException($"Esc returned a non-config object: '{output}'.");
+            }
+
+            return output;
         }
 
         internal Dictionary<string, string>? InnerLoad()
@@ -113,5 +149,7 @@ namespace Esc.Sdk.Cli
                 Environment.SetEnvironmentVariable(kvp.Key, kvp.Value, EnvironmentVariableTarget.Process);
             }
         }
+
+       
     }
 }
