@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlTypes;
 
 namespace Esc.Sdk.Cli
 {
@@ -20,6 +21,6 @@ namespace Esc.Sdk.Cli
         /// <exception cref="InvalidOperationException">In case of any error. See inner exception for more details.</exception>
         void Load(bool forceUpdate);
 
-        //void Set(string path, string value);
+        void Set(string path, string value, bool isSecret = false);
     }
 }

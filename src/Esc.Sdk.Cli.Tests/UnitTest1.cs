@@ -1,8 +1,6 @@
-using Esc.Sdk.Cli;
-using System.Security.Cryptography;
 using Task = System.Threading.Tasks.Task;
 
-namespace DynamicsGP.Sdk.Tests;
+namespace Esc.Sdk.Cli.Tests;
 
 public class UnitTest1
 {
@@ -11,21 +9,21 @@ public class UnitTest1
     {
         try
         {
-            var escPath = "D:\\bytefoo\\esc-sdk-cli\\esc.exe";
+            var escPath = "C:\\Users\\dbeattie\\.pulumi\\bin\\esc.exe";
             var options = new EscOptions
             {
                 EscPath = escPath,
-                OrgName = "OrgName",
-                ProjectName = "AppSettings",
+                OrgName = "",
+                ProjectName = "Sandbox",
                 EnvironmentName = "test",
-                PulumiAccessToken ="PulumiAccessToken",
+                PulumiAccessToken ="",
             };
 
             var escConfig = new EscConfig(options);
 
-            //escConfig.Set("Foo_Bar", "asdf123");
+            escConfig.Set("Foo_Bar_2", "asdf123", true);
             //var success = escConfig.TryLoad(out var config);
-            var success = escConfig.TryLoad(out var config, out var exception);
+            //var success = escConfig.TryLoad(out var config, out var exception);
         }
         catch (Exception e)
         {
