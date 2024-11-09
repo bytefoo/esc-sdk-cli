@@ -36,7 +36,7 @@ namespace Esc.Sdk.Cli
         /// <param name="self"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static bool TryLoad(this EscConfig self, out Dictionary<string, string>? config)
+        public static bool TryLoad(this EscConfig self, out Dictionary<string, string> config)
         {
             try
             {
@@ -59,8 +59,8 @@ namespace Esc.Sdk.Cli
         /// <param name="config"></param>
         /// <param name="exception"></param>
         /// <returns>bool</returns>
-        public static bool TryLoad(this EscConfig self, out Dictionary<string, string>? config,
-            out Exception? exception)
+        public static bool TryLoad(this EscConfig self, out Dictionary<string, string> config,
+            out Exception exception)
         {
             try
             {

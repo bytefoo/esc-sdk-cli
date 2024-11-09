@@ -2,9 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-		<Nullable>enable</Nullable>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<LangVersion>8.0</LangVersion>
+		<LangVersion>7.3</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

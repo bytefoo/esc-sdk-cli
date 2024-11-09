@@ -14,18 +14,18 @@ namespace Esc.Sdk.Cli
         /// <summary>
         ///     The environment name.
         /// </summary>
-        public string? EnvironmentName { get; set; }
+        public string EnvironmentName { get; set; }
 
         /// <summary>
         ///     The path to the esc.exe file.
         ///     Default path is the executing assembly path + "esc.exe".
         /// </summary>
-        public string? EscPath { get; set; }
+        public string EscPath { get; set; }
 
         /// <summary>
         ///     The organization name.
         /// </summary>
-        public string? OrgName { get; set; }
+        public string OrgName { get; set; }
 
         /// <summary>
         ///     The project name.
@@ -37,7 +37,7 @@ namespace Esc.Sdk.Cli
         ///     Overrides the environment key to use.
         ///     Default is the "PULUMI_ACCESS_TOKEN" environment variable.
         /// </summary>
-        public string? PulumiAccessToken { get; set; }
+        public string PulumiAccessToken { get; set; }
 
         /// <summary>
         ///     Timeout in seconds for http requests.
@@ -54,13 +54,21 @@ namespace Esc.Sdk.Cli
 
             var searchPath = GetSearchPath();
 
-            var escExecutable = GetOsPlatform() switch
+            string escExecutable;
+            switch (GetOsPlatform())
             {
-                OsPlatformType.Windows => "esc_win64.exe",
-                OsPlatformType.Linux => "esc_linux64",
-                OsPlatformType.Osx => "esc_darwin64",
-                _ => throw new ArgumentOutOfRangeException()
-            };
+                case OsPlatformType.Windows:
+                    escExecutable = "esc_win64.exe";
+                    break;
+                case OsPlatformType.Linux:
+                    escExecutable = "esc_linux64";
+                    break;
+                case OsPlatformType.Osx:
+                    escExecutable = "esc_darwin64";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             var fullEscExePath = Path.Combine(searchPath, escExecutable);
             Trace.WriteLine($"Using '{fullEscExePath}' as esc executable.");
@@ -83,7 +91,7 @@ namespace Esc.Sdk.Cli
             return searchPath ?? Directory.GetCurrentDirectory();
         }
 
-        private static string? GetEntryAssemblyLocation()
+        private static string GetEntryAssemblyLocation()
         {
             var assembly = Assembly.GetEntryAssembly();
 

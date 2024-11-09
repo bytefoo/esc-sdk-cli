@@ -171,7 +171,7 @@ namespace Esc.Sdk.Cli
         //    return output;
         //}
 
-        internal Dictionary<string, string>? InnerLoad()
+        internal Dictionary<string, string> InnerLoad()
         {
             var config = InnerLoadRaw();
             var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(config);
@@ -179,7 +179,7 @@ namespace Esc.Sdk.Cli
             return dict;
         }
 
-        internal static void PatchEnvironmentVariables(Dictionary<string, string>? config, bool forceUpdate)
+        internal static void PatchEnvironmentVariables(Dictionary<string, string> config, bool forceUpdate)
         {
             var skipExisting = !forceUpdate;
 
