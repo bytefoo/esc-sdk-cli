@@ -159,7 +159,7 @@ namespace Esc.Sdk.Cli
                     errorBuilder.AppendLine(process.StandardError.ReadLine());
                 }
             });
-
+            
             //process.BeginErrorReadLine();
             //process.BeginOutputReadLine();
             Task.WaitAll(outputTask, errorTask);
