@@ -45,7 +45,7 @@ namespace Esc.Sdk.Cli
         /// </summary>
         public int Timeout { get; set; } = 15;
 
-        private string GetEscExecutable()
+        internal string GetEscExecutable()
         {
             if (EscPath != null)
             {
