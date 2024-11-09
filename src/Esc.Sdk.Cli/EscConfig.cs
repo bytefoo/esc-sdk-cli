@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Esc.Sdk.Cli
@@ -66,51 +64,6 @@ namespace Esc.Sdk.Cli
         //    }
         //}
 
-        //internal string InnerLoadRaw()
-        //{
-        //    var fileName = _options.GetEscExecutable();
-
-        //    if (string.IsNullOrEmpty(_options.PulumiAccessToken))
-        //    {
-        //        throw new InvalidOperationException(
-        //            "Pulumi access token not found. Please set via environment variable as 'PULUMI_ACCESS_TOKEN' or configure via the options.");
-        //    }
-
-        //    var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
-
-        //    var processStartInfo = new ProcessStartInfo(fileName, arguments)
-        //    {
-        //        CreateNoWindow = true,
-        //        UseShellExecute = false,
-        //        WindowStyle = ProcessWindowStyle.Hidden,
-        //        RedirectStandardOutput = true,
-        //        RedirectStandardError = true,
-        //        StandardErrorEncoding = Encoding.UTF8,
-        //        StandardOutputEncoding = Encoding.UTF8,
-        //        EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
-        //    };
-
-        //    var process = new Process {StartInfo = processStartInfo};
-        //    //process.EnableRaisingEvents = true;
-
-        //    process.Start();
-
-        //    var output = process.StandardOutput.ReadToEnd();
-        //    var successfulExit = process.WaitForExit((int)TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
-
-        //    if (!successfulExit)
-        //    {
-        //        throw new InvalidOperationException("EnvKey process timed out.");
-        //    }
-
-        //    if (!output.StartsWith("{"))
-        //    {
-        //        throw new InvalidOperationException($"EnvKey returned a non-config object: '{output}'.");
-        //    }
-
-        //    return output;
-        //}
-
         internal string InnerLoadRaw()
         {
             var fileName = _options.GetEscExecutable();
@@ -132,18 +85,16 @@ namespace Esc.Sdk.Cli
                 RedirectStandardError = true,
                 StandardErrorEncoding = Encoding.UTF8,
                 StandardOutputEncoding = Encoding.UTF8,
-                EnvironmentVariables = { ["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken }
+                EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
             };
 
-            var process = new Process { StartInfo = processStartInfo };
+            var process = new Process {StartInfo = processStartInfo};
 
             var errorBuilder = new StringBuilder();
             var outputBuilder = new StringBuilder();
 
             process.Start();
 
-            //process.ErrorDataReceived += (sender, args) => errorBuilder.AppendLine(args.Data);
-            //process.OutputDataReceived += (sender, args) => outputBuilder.AppendLine(args.Data);
             var outputTask = Task.Run(() =>
             {
                 while (!process.StandardOutput.EndOfStream)
@@ -159,13 +110,11 @@ namespace Esc.Sdk.Cli
                     errorBuilder.AppendLine(process.StandardError.ReadLine());
                 }
             });
-            
-            //process.BeginErrorReadLine();
-            //process.BeginOutputReadLine();
+
             Task.WaitAll(outputTask, errorTask);
 
             var successfulExit =
-                process.WaitForExit((int)TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
+                process.WaitForExit((int) TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
 
             if (!successfulExit)
             {
@@ -212,7 +161,5 @@ namespace Esc.Sdk.Cli
                 Environment.SetEnvironmentVariable(kvp.Key, kvp.Value, EnvironmentVariableTarget.Process);
             }
         }
-
-       
     }
 }
