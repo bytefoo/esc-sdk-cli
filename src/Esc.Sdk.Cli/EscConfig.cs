@@ -76,19 +76,20 @@ namespace Esc.Sdk.Cli
 
             var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
 
-            var processStartInfo = new ProcessStartInfo(fileName, arguments)
+            var process = new Process
             {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                StandardErrorEncoding = Encoding.UTF8,
-                StandardOutputEncoding = Encoding.UTF8,
-                EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
+                StartInfo = new ProcessStartInfo(fileName, arguments)
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    StandardErrorEncoding = Encoding.UTF8,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
+                }
             };
-
-            var process = new Process {StartInfo = processStartInfo};
 
             process.Start();
 
