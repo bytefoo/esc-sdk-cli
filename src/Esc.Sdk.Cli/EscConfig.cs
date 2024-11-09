@@ -90,6 +90,51 @@ namespace Esc.Sdk.Cli
 
             var process = new Process {StartInfo = processStartInfo};
 
+            process.Start();
+
+            var output = process.StandardOutput.ReadToEnd();
+            var successfulExit =
+                process.WaitForExit((int) TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
+
+            if (!successfulExit)
+            {
+                throw new InvalidOperationException("EnvKey process timed out.");
+            }
+
+            if (!output.StartsWith("{"))
+            {
+                throw new InvalidOperationException($"EnvKey returned a non-config object: '{output}'.");
+            }
+
+            return output;
+        }
+
+        internal string InnerLoadRaw2()
+        {
+            var fileName = _options.GetEscExecutable();
+
+            if (string.IsNullOrEmpty(_options.PulumiAccessToken))
+            {
+                throw new InvalidOperationException(
+                    "Pulumi access token not found. Please set via environment variable as 'PULUMI_ACCESS_TOKEN' or configure via the options.");
+            }
+
+            var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
+
+            var processStartInfo = new ProcessStartInfo(fileName, arguments)
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                StandardErrorEncoding = Encoding.UTF8,
+                StandardOutputEncoding = Encoding.UTF8,
+                EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
+            };
+
+            var process = new Process {StartInfo = processStartInfo};
+
             var errorBuilder = new StringBuilder();
             var outputBuilder = new StringBuilder();
 
