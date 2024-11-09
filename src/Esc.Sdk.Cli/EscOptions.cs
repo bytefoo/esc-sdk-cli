@@ -45,8 +45,7 @@ namespace Esc.Sdk.Cli
         /// </summary>
         public int Timeout { get; set; } = 15;
 
-
-        internal string GetEscExecutable()
+        private string GetEscExecutable()
         {
             if (EscPath != null)
             {
@@ -55,21 +54,13 @@ namespace Esc.Sdk.Cli
 
             var searchPath = GetSearchPath();
 
-            string escExecutable;
-            switch (GetOsPlatform())
+            var escExecutable = GetOsPlatform() switch
             {
-                case OsPlatformType.Windows:
-                    escExecutable = "esc_win64.exe";
-                    break;
-                case OsPlatformType.Linux:
-                    escExecutable = "esc_linux64";
-                    break;
-                case OsPlatformType.Osx:
-                    escExecutable = "esc_darwin64";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                OsPlatformType.Windows => "esc_win64.exe",
+                OsPlatformType.Linux => "esc_linux64",
+                OsPlatformType.Osx => "esc_darwin64",
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
             var fullEscExePath = Path.Combine(searchPath, escExecutable);
             Trace.WriteLine($"Using '{fullEscExePath}' as esc executable.");
@@ -83,7 +74,7 @@ namespace Esc.Sdk.Cli
             return fullEscExePath;
         }
 
-        internal string GetSearchPath()
+        private static string GetSearchPath()
         {
             var searchPath = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID"))
                 ? Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot")
