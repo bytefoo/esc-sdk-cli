@@ -140,6 +140,8 @@ namespace Esc.Sdk.Cli
             var errorBuilder = new StringBuilder();
             var outputBuilder = new StringBuilder();
 
+            process.Start();
+
             //process.ErrorDataReceived += (sender, args) => errorBuilder.AppendLine(args.Data);
             //process.OutputDataReceived += (sender, args) => outputBuilder.AppendLine(args.Data);
             var outputTask = Task.Run(() =>
@@ -157,9 +159,6 @@ namespace Esc.Sdk.Cli
                     errorBuilder.AppendLine(process.StandardError.ReadLine());
                 }
             });
-
-
-            process.Start();
 
             //process.BeginErrorReadLine();
             //process.BeginOutputReadLine();
