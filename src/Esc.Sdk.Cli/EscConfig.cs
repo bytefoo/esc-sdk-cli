@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Esc.Sdk.Cli
 {
@@ -64,50 +66,6 @@ namespace Esc.Sdk.Cli
         //    }
         //}
 
-        internal string InnerLoadRaw()
-        {
-            var fileName = _options.GetEscExecutable();
-
-            if (string.IsNullOrEmpty(_options.PulumiAccessToken))
-            {
-                throw new InvalidOperationException(
-                    "Pulumi access token not found. Please set via environment variable as 'PULUMI_ACCESS_TOKEN' or configure via the options.");
-            }
-
-            var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
-           
-            var processStartInfo = new ProcessStartInfo(fileName, arguments)
-            {
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                StandardErrorEncoding = Encoding.UTF8,
-                StandardOutputEncoding = Encoding.UTF8,
-                EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
-            };
-
-            var process = new Process {StartInfo = processStartInfo};
-
-            process.Start();
-
-            var output = process.StandardOutput.ReadToEnd();
-            var successfulExit = process.WaitForExit((int)TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
-
-            if (!successfulExit)
-            {
-                throw new InvalidOperationException("EnvKey process timed out.");
-            }
-
-            if (!output.StartsWith("{"))
-            {
-                throw new InvalidOperationException($"EnvKey returned a non-config object: '{output}'.");
-            }
-
-            return output;
-        }
-
         //internal string InnerLoadRaw()
         //{
         //    var fileName = _options.GetEscExecutable();
@@ -119,7 +77,7 @@ namespace Esc.Sdk.Cli
         //    }
 
         //    var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
-           
+
         //    var processStartInfo = new ProcessStartInfo(fileName, arguments)
         //    {
         //        CreateNoWindow = true,
@@ -133,40 +91,102 @@ namespace Esc.Sdk.Cli
         //    };
 
         //    var process = new Process {StartInfo = processStartInfo};
-
-        //    var outputBuilder = new StringBuilder();
-        //    var errorBuilder = new StringBuilder();
-
-        //    process.OutputDataReceived += (sender, args) => outputBuilder.AppendLine(args.Data);
-        //    process.ErrorDataReceived += (sender, args) => errorBuilder.AppendLine(args.Data);
+        //    //process.EnableRaisingEvents = true;
 
         //    process.Start();
 
-        //    process.BeginOutputReadLine();
-        //    process.BeginErrorReadLine();
-
-        //    var successfulExit =
-        //        process.WaitForExit((int) TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
+        //    var output = process.StandardOutput.ReadToEnd();
+        //    var successfulExit = process.WaitForExit((int)TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
 
         //    if (!successfulExit)
         //    {
-        //        throw new InvalidOperationException("Esc process timed out.");
+        //        throw new InvalidOperationException("EnvKey process timed out.");
         //    }
 
-        //    var standardError = errorBuilder.ToString();
-        //    if (!string.IsNullOrEmpty(standardError.Trim()))
-        //    {
-        //        throw new InvalidOperationException(standardError);
-        //    }
-
-        //    var output = outputBuilder.ToString();
         //    if (!output.StartsWith("{"))
         //    {
-        //        throw new InvalidOperationException($"Esc returned a non-config object: '{output}'.");
+        //        throw new InvalidOperationException($"EnvKey returned a non-config object: '{output}'.");
         //    }
 
         //    return output;
         //}
+
+        internal string InnerLoadRaw()
+        {
+            var fileName = _options.GetEscExecutable();
+
+            if (string.IsNullOrEmpty(_options.PulumiAccessToken))
+            {
+                throw new InvalidOperationException(
+                    "Pulumi access token not found. Please set via environment variable as 'PULUMI_ACCESS_TOKEN' or configure via the options.");
+            }
+
+            var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
+
+            var processStartInfo = new ProcessStartInfo(fileName, arguments)
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                StandardErrorEncoding = Encoding.UTF8,
+                StandardOutputEncoding = Encoding.UTF8,
+                EnvironmentVariables = { ["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken }
+            };
+
+            var process = new Process { StartInfo = processStartInfo };
+
+            var errorBuilder = new StringBuilder();
+            var outputBuilder = new StringBuilder();
+
+            //process.ErrorDataReceived += (sender, args) => errorBuilder.AppendLine(args.Data);
+            //process.OutputDataReceived += (sender, args) => outputBuilder.AppendLine(args.Data);
+            var outputTask = Task.Run(() =>
+            {
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    outputBuilder.AppendLine(process.StandardOutput.ReadLine());
+                }
+            });
+
+            var errorTask = Task.Run(() =>
+            {
+                while (!process.StandardError.EndOfStream)
+                {
+                    errorBuilder.AppendLine(process.StandardError.ReadLine());
+                }
+            });
+
+
+            process.Start();
+
+            //process.BeginErrorReadLine();
+            //process.BeginOutputReadLine();
+            Task.WaitAll(outputTask, errorTask);
+
+            var successfulExit =
+                process.WaitForExit((int)TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
+
+            if (!successfulExit)
+            {
+                throw new InvalidOperationException("Esc process timed out.");
+            }
+
+            var standardError = errorBuilder.ToString();
+            if (!string.IsNullOrEmpty(standardError.Trim()))
+            {
+                throw new InvalidOperationException(standardError);
+            }
+
+            var output = outputBuilder.ToString();
+            if (!output.StartsWith("{"))
+            {
+                throw new InvalidOperationException($"Esc returned a non-config object: '{output}'.");
+            }
+
+            return output;
+        }
 
         internal Dictionary<string, string>? InnerLoad()
         {
