@@ -110,6 +110,7 @@ namespace Esc.Sdk.Cli
             return output;
         }
 
+        //todo: why does reading StandardError not work on Azure Hosted Agents?
         internal string InnerLoadRaw2()
         {
             var fileName = _options.GetEscExecutable();
