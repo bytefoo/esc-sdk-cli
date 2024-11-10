@@ -59,12 +59,12 @@ namespace Esc.Sdk.Cli
 
             if (!successfulExit)
             {
-                throw new InvalidOperationException("EnvKey process timed out.");
+                throw new InvalidOperationException("Esc process timed out.");
             }
 
             if (!output.StartsWith("{"))
             {
-                throw new InvalidOperationException($"EnvKey returned a non-config object: '{output}'.");
+                throw new InvalidOperationException($"Esc returned a non-config object: '{output}'.");
             }
 
             return output;
