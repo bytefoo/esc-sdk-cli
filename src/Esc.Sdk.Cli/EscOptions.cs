@@ -87,9 +87,19 @@ namespace Esc.Sdk.Cli
             var websiteInstanceId = Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
             var azureWebJobsScriptRoot = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
 
-            return !string.IsNullOrEmpty(websiteInstanceId) ? null :
-                !string.IsNullOrEmpty(azureWebJobsScriptRoot) ? azureWebJobsScriptRoot :
-                Directory.GetCurrentDirectory();
+            //if running an Azure Function, in Azure, return null
+            if (!string.IsNullOrEmpty(websiteInstanceId))
+            {
+                return null;
+            }
+
+            //if running an Azure Function local, return the AzureWebJobsScriptRoot
+            if (!string.IsNullOrEmpty(azureWebJobsScriptRoot))
+            {
+                return azureWebJobsScriptRoot;
+            }
+
+            return Directory.GetCurrentDirectory();
         }
 
         private static string GetEntryAssemblyLocation()
