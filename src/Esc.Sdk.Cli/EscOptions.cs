@@ -84,11 +84,29 @@ namespace Esc.Sdk.Cli
 
         private static string GetSearchPath()
         {
-            var searchPath = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID"))
-                ? GetEntryAssemblyLocation()
-                : Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
+            var websiteInstanceId = Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
+            var azureWebJobsScriptRoot = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
 
-            return searchPath ?? Directory.GetCurrentDirectory();
+            if (!string.IsNullOrEmpty(websiteInstanceId))
+            {
+                return null;
+            }
+
+            if (!string.IsNullOrEmpty(azureWebJobsScriptRoot))
+            {
+                return azureWebJobsScriptRoot;
+            }
+
+            //if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")))
+            //{
+            //    searchPath = GetEntryAssemblyLocation();
+            //}
+            //else
+            //{
+            //    searchPath = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
+            //}
+
+            return Directory.GetCurrentDirectory();
         }
 
         private static string GetEntryAssemblyLocation()
