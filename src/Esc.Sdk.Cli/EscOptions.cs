@@ -87,26 +87,9 @@ namespace Esc.Sdk.Cli
             var websiteInstanceId = Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID");
             var azureWebJobsScriptRoot = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
 
-            if (!string.IsNullOrEmpty(websiteInstanceId))
-            {
-                return null;
-            }
-
-            if (!string.IsNullOrEmpty(azureWebJobsScriptRoot))
-            {
-                return azureWebJobsScriptRoot;
-            }
-
-            //if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")))
-            //{
-            //    searchPath = GetEntryAssemblyLocation();
-            //}
-            //else
-            //{
-            //    searchPath = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
-            //}
-
-            return Directory.GetCurrentDirectory();
+            return !string.IsNullOrEmpty(websiteInstanceId) ? null :
+                !string.IsNullOrEmpty(azureWebJobsScriptRoot) ? azureWebJobsScriptRoot :
+                Directory.GetCurrentDirectory();
         }
 
         private static string GetEntryAssemblyLocation()
