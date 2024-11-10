@@ -99,7 +99,7 @@ namespace Esc.Sdk.Cli
                 return azureWebJobsScriptRoot;
             }
 
-            return Directory.GetCurrentDirectory();
+            return GetEntryAssemblyLocation() ?? Directory.GetCurrentDirectory();
         }
 
         private static string GetEntryAssemblyLocation()
