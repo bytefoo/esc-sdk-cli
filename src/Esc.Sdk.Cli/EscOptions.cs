@@ -85,8 +85,8 @@ namespace Esc.Sdk.Cli
         private static string GetSearchPath()
         {
             var searchPath = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID"))
-                ? Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot")
-                : GetEntryAssemblyLocation();
+                ? GetEntryAssemblyLocation()
+                : Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
 
             return searchPath ?? Directory.GetCurrentDirectory();
         }
