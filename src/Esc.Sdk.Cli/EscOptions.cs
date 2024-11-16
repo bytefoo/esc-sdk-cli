@@ -45,12 +45,23 @@ namespace Esc.Sdk.Cli
         /// </summary>
         public int Timeout { get; set; } = 15;
 
+        /// <summary>
+        ///     Defines if the caching option should be used.
+        ///     Default true when in DEBUG mode, otherwise false.
+        /// </summary>
+        public bool? UseCache { get; set; }
+
+
+        /// <summary>
+        ///     The cache expiration duration.
+        ///     Default is 4 hours.
+        /// </summary>
+        public TimeSpan CacheExpiration { get; set; } = TimeSpan.FromHours(4);
+
         internal string GetEscExecutable()
         {
             if (EscPath != null)
-            {
                 return EscPath;
-            }
 
             var searchPath = GetSearchPath();
 
@@ -74,10 +85,8 @@ namespace Esc.Sdk.Cli
             Trace.WriteLine($"Using '{fullEscExePath}' as esc executable.");
 
             if (!File.Exists(fullEscExePath))
-            {
                 throw new FileNotFoundException(
                     "Esc executable was not found. Please specify the full path via the options.", fullEscExePath);
-            }
 
             return fullEscExePath;
         }
@@ -89,15 +98,11 @@ namespace Esc.Sdk.Cli
 
             //if running an Azure Function, in Azure, return null
             if (!string.IsNullOrEmpty(websiteInstanceId))
-            {
                 return null;
-            }
 
             //if running an Azure Function local, return the AzureWebJobsScriptRoot
             if (!string.IsNullOrEmpty(azureWebJobsScriptRoot))
-            {
                 return azureWebJobsScriptRoot;
-            }
 
             return GetEntryAssemblyLocation() ?? Directory.GetCurrentDirectory();
         }
@@ -121,9 +126,7 @@ namespace Esc.Sdk.Cli
             // For compatibility reasons with Mono, PlatformID.Unix is returned on MacOSX. PlatformID.MacOSX
             // is hidden from the editor and shouldn't be used.
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
                 return OsPlatformType.Osx;
-            }
 #endif
 
             var os = Environment.OSVersion;

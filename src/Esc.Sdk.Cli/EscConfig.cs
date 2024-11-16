@@ -1,15 +1,22 @@
-﻿using System;
+﻿using EasyCaching.Core;
+using EasyCaching.Disk;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using EasyCaching.Serialization.SystemTextJson;
+using EasyCaching.Core.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace Esc.Sdk.Cli
 {
     public class EscConfig : IEscConfig
     {
         private readonly EscOptions _options;
+        private readonly IEasyCachingProvider _cachingProvider;
 
         public EscConfig() : this(new EscOptions())
         {
@@ -18,6 +25,20 @@ namespace Esc.Sdk.Cli
         public EscConfig(EscOptions options)
         {
             _options = options;
+
+            var diskOptions = new DiskOptions
+            {
+                DBConfig = new DiskDbOptions() 
+                {
+                    BasePath = Path.Join(Path.GetTempPath(), nameof(EscConfig)),
+                }
+            };
+
+            var defaultJsonSerializer = new DefaultJsonSerializer("disk", new JsonSerializerOptions());
+            var easyCachingSerializers = new List<IEasyCachingSerializer> { defaultJsonSerializer };
+           
+            _cachingProvider = new DefaultDiskCachingProvider("disk", easyCachingSerializers,  diskOptions, null);
+            
         }
 
         public void Load()
@@ -47,6 +68,32 @@ namespace Esc.Sdk.Cli
         }
 
         internal string InnerLoadRaw()
+        {
+#if DEBUG
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (_options.UseCache.GetValueOrDefault(true))
+            {
+                return InnerLoadRawCache();
+            }
+#endif
+            return InnerLoadRawEsc();
+        }
+
+        internal string InnerLoadRawCache()
+        {
+            var cacheKey = $"{_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
+            var cacheValue = _cachingProvider.Get<string>(cacheKey);
+            if (cacheValue.HasValue)
+            {
+                return cacheValue.Value;
+            }
+            var config = InnerLoadRawEsc();
+            _cachingProvider.Set(cacheKey, config, _options.CacheExpiration);
+
+            return config;
+        }
+
+        internal string InnerLoadRawEsc()
         {
             var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
 

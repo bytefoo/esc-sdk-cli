@@ -13,16 +13,17 @@ public class UnitTest1
             var options = new EscOptions
             {
                 EscPath = escPath,
-                OrgName = "",
+                OrgName = "jetlinx",
                 ProjectName = "Sandbox",
                 EnvironmentName = "test",
-                PulumiAccessToken ="",
+                PulumiAccessToken = "",
+                UseCache = true
             };
 
             var escConfig = new EscConfig(options);
 
-            escConfig.Set("Foo_Bar_2", "asdf123", true);
-            //var success = escConfig.TryLoad(out var config);
+           // escConfig.Set("Foo_Bar_2", "asdf123", true);
+            var success = escConfig.TryLoad(out var config);
             //var success = escConfig.TryLoad(out var config, out var exception);
         }
         catch (Exception e)
