@@ -5,6 +5,7 @@ using System.Collections.Generic;using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Security;
 using System.Text;
 using System.Text.Json;
 using EasyCaching.Serialization.SystemTextJson;
@@ -61,9 +62,9 @@ namespace Esc.Sdk.Cli
 
         public void Set(List<(string Path, string Value, bool IsSecret)> values)
         {
-            foreach (var secret in values)
+            foreach (var tuple in values)
             {
-                Set(secret.Path, secret.Value, secret.IsSecret);
+                Set(tuple.Path, tuple.Value, tuple.IsSecret);
             }
         }
 
@@ -74,6 +75,14 @@ namespace Esc.Sdk.Cli
                     $"env set {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName} {path} {value} {(isSecret ? "--secret" : "")}");
             process.Start();
             process.WaitForExit();
+        }
+
+        public void Remove(List<string> paths)
+        {
+            foreach (var path in paths)
+            {
+                Remove(paths);
+            }
         }
 
         public void Remove(string path)
