@@ -1,7 +1,7 @@
 ﻿using EasyCaching.Core;
 using EasyCaching.Disk;
 using System;
-using System.Collections.Generic;
+using System.Collections.Generic;using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -59,12 +59,21 @@ namespace Esc.Sdk.Cli
             }
         }
 
+        public void Set(List<Secret> secrets)
+        {
+            foreach (var secret in secrets)
+            {
+                Set(secret.Path, secret.Value, secret.IsSecret);
+            }
+        }
+
         public void Set(string path, string value, bool isSecret = false)
         {
             var process =
                 GetProcess(
                     $"env set {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName} {path} {value} {(isSecret ? "--secret" : "")}");
             process.Start();
+            process.WaitForExit();
         }
 
         internal string InnerLoadRaw()
@@ -244,4 +253,21 @@ namespace Esc.Sdk.Cli
             }
         }
     }
+
+    public class Secret
+    {
+        public string Path { get; }
+
+        public string Value { get; }
+
+        public bool IsSecret { get; }
+
+        public Secret(string path, string value, bool isSecret = false)
+        {
+            Path = path;
+            Value = value;
+            IsSecret = isSecret;
+        }
+    }
 }
+

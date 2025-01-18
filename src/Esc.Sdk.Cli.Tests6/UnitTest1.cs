@@ -14,17 +14,26 @@ public class UnitTest1
             {
                 EscPath = escPath,
                 OrgName = "jetlinx",
-                ProjectName = "Sandbox",
+                ProjectName = "test",
                 EnvironmentName = "test",
-                PulumiAccessToken = "",
+                PulumiAccessToken = Environment.GetEnvironmentVariable("PULUMI_ACCESS_TOKEN"),
                 UseCache = true
             };
 
             var escConfig = new EscConfig(options);
 
-           // escConfig.Set("Foo_Bar_2", "asdf123", true);
-            var success = escConfig.TryLoad(out var config);
+            //escConfig.Set("Foo_Bar_2", "asdf123", true);
+            //escConfig.Set("test.Foo_Bar_2", "asdf123", true);
+            //var success = escConfig.TryLoad(out var config);
             //var success = escConfig.TryLoad(out var config, out var exception);
+
+            var secrets = new List<Secret>
+            {
+                new Secret("foo.bar", "1"),
+                new Secret("foo.baz", "1"),
+                new Secret("foo.que", "1"),
+            };
+            escConfig.Set(secrets);
         }
         catch (Exception e)
         {
