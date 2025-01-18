@@ -59,9 +59,9 @@ namespace Esc.Sdk.Cli
             }
         }
 
-        public void Set(List<Secret> secrets)
+        public void Set(List<(string Path, string Value, bool IsSecret)> values)
         {
-            foreach (var secret in secrets)
+            foreach (var secret in values)
             {
                 Set(secret.Path, secret.Value, secret.IsSecret);
             }
@@ -189,21 +189,4 @@ namespace Esc.Sdk.Cli
             }
         }
     }
-
-    public class Secret
-    {
-        public string Path { get; }
-
-        public string Value { get; }
-
-        public bool IsSecret { get; }
-
-        public Secret(string path, string value, bool isSecret = false)
-        {
-            Path = path;
-            Value = value;
-            IsSecret = isSecret;
-        }
-    }
 }
-
