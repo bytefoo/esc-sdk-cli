@@ -27,13 +27,15 @@ public class UnitTest1
             //var success = escConfig.TryLoad(out var config);
             //var success = escConfig.TryLoad(out var config, out var exception);
 
-            var secrets = new List<Secret>
-            {
-                new Secret("foo.bar", "1"),
-                new Secret("foo.baz", "1"),
-                new Secret("foo.que", "1"),
-            };
-            escConfig.Set(secrets);
+            //var secrets = new List<Secret>
+            //{
+            //    new Secret("foo.bar", "1"),
+            //    new Secret("foo.baz", "1"),
+            //    new Secret("foo.que", "1"),
+            //};
+            //escConfig.Set(secrets);
+
+            escConfig.Remove("settings.infra.apicloud");
         }
         catch (Exception e)
         {

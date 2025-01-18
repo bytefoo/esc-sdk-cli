@@ -76,6 +76,15 @@ namespace Esc.Sdk.Cli
             process.WaitForExit();
         }
 
+        public void Remove(string path)
+        {
+            var process =
+                GetProcess(
+                    $"env rm {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName} {path}");
+            process.Start();
+            process.WaitForExit();
+        }
+
         internal string InnerLoadRaw()
         {
 #if DEBUG
@@ -153,79 +162,6 @@ namespace Esc.Sdk.Cli
 
             return process;
         }
-
-        //todo: why does reading StandardError not work on Azure Hosted Agents?
-        //internal string InnerLoadRaw2()
-        //{
-        //    var fileName = _options.GetEscExecutable();
-
-        //    if (string.IsNullOrEmpty(_options.PulumiAccessToken))
-        //    {
-        //        throw new InvalidOperationException(
-        //            "Pulumi access token not found. Please set via environment variable as 'PULUMI_ACCESS_TOKEN' or configure via the options.");
-        //    }
-
-        //    var arguments = $"open {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName}";
-
-        //    var processStartInfo = new ProcessStartInfo(fileName, arguments)
-        //    {
-        //        CreateNoWindow = true,
-        //        UseShellExecute = false,
-        //        WindowStyle = ProcessWindowStyle.Hidden,
-        //        RedirectStandardOutput = true,
-        //        RedirectStandardError = true,
-        //        StandardErrorEncoding = Encoding.UTF8,
-        //        StandardOutputEncoding = Encoding.UTF8,
-        //        EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
-        //    };
-
-        //    var process = new Process {StartInfo = processStartInfo};
-
-        //    var errorBuilder = new StringBuilder();
-        //    var outputBuilder = new StringBuilder();
-
-        //    process.Start();
-
-        //    var outputTask = Task.Run(() =>
-        //    {
-        //        while (!process.StandardOutput.EndOfStream)
-        //        {
-        //            outputBuilder.AppendLine(process.StandardOutput.ReadLine());
-        //        }
-        //    });
-
-        //    var errorTask = Task.Run(() =>
-        //    {
-        //        while (!process.StandardError.EndOfStream)
-        //        {
-        //            errorBuilder.AppendLine(process.StandardError.ReadLine());
-        //        }
-        //    });
-
-        //    Task.WaitAll(outputTask, errorTask);
-
-        //    var successfulExit =
-        //        process.WaitForExit((int) TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
-
-        //    if (!successfulExit)
-        //    {
-        //        throw new InvalidOperationException("Esc process timed out.");
-        //    }
-
-        //    var standardError = errorBuilder.ToString();
-        //    if (!string.IsNullOrEmpty(standardError.Trim()))
-        //    {
-        //        throw new InvalidOperationException(standardError);
-        //    }
-
-        //    var output = outputBuilder.ToString();
-        //    if (!output.StartsWith("{"))
-        //    {
-        //        throw new InvalidOperationException($"Esc returned a non-config object: '{output}'.");
-        //    }
-
-        //    return output;
-        //}
 
         internal Dictionary<string, string> InnerLoad()
         {
