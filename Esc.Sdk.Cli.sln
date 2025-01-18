@@ -13,10 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_Solution
 		README_esc.md = README_esc.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esc.Sdk.Cli.Tests6", "src\Esc.Sdk.Cli.Tests6\Esc.Sdk.Cli.Tests6.csproj", "{B939EBBA-B434-4386-A8AA-F5C9E4C6B383}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esc.Sdk.Cli.Tests8", "src\Esc.Sdk.Cli.Tests8\Esc.Sdk.Cli.Tests8.csproj", "{3B5940E7-8AAE-4D70-BE74-D1151E49AF0D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,14 +25,6 @@ Global
 		{960B58CE-8A72-4E32-BBA0-90CFEEC89012}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{960B58CE-8A72-4E32-BBA0-90CFEEC89012}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{960B58CE-8A72-4E32-BBA0-90CFEEC89012}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B939EBBA-B434-4386-A8AA-F5C9E4C6B383}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B939EBBA-B434-4386-A8AA-F5C9E4C6B383}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B939EBBA-B434-4386-A8AA-F5C9E4C6B383}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B939EBBA-B434-4386-A8AA-F5C9E4C6B383}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B5940E7-8AAE-4D70-BE74-D1151E49AF0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B5940E7-8AAE-4D70-BE74-D1151E49AF0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B5940E7-8AAE-4D70-BE74-D1151E49AF0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3B5940E7-8AAE-4D70-BE74-D1151E49AF0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
