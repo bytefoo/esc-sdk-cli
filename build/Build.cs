@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,11 +44,13 @@ class Build : NukeBuild
     [Parameter(Name = "NUGET_PUBLISH_KEY")] [Secret] string NuGetApiKey;
 
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
+    AbsolutePath ContentFilesDirectory => RootDirectory / "contentFiles";
 
     Target Clean => _ => _
         .Before(Restore)
         .Executes(() =>
         {
+            ContentFilesDirectory.DeleteDirectory();
             ArtifactsDirectory.DeleteDirectory();
             SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(path => path.DeleteDirectory());
             TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(path => path.DeleteDirectory());
@@ -85,12 +88,10 @@ class Build : NukeBuild
             );
         });
 
-
-
     Target Download => _ => _
         .Executes(() =>
         {
-            const string version = "v0.11.0";
+            const string version = "v0.11.1";
             const string baseUrl = $"https://get.pulumi.com/esc/releases/esc-{version}";
 
             List<string> operatingSystems =
@@ -110,7 +111,11 @@ class Build : NukeBuild
                 Log.Information("url: {0} filename: {1}", url, filename);
 
                 AbsolutePath releaseTempFilename = Path.Combine(TemporaryDirectory, filename);
-                HttpDownloadFile(url, releaseTempFilename);
+                HttpDownloadFile(url, releaseTempFilename, clientConfigurator: settings =>
+                {
+                    settings.Timeout = TimeSpan.FromSeconds(15);
+                    return settings;
+                });
 
                 var unCompressDirectory = TemporaryDirectory / operatingSystem;
                 releaseTempFilename.UncompressTo(unCompressDirectory);
@@ -172,6 +177,7 @@ class Build : NukeBuild
         });
 
     Target Restore => _ => _
+        .DependsOn(Clean)
         .Executes(() =>
         {
             DotNetRestore(s => s
