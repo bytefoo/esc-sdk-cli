@@ -79,10 +79,13 @@ class Build : NukeBuild
                 .When(IsServerBuild, _ => _
                     .EnableContinuousIntegrationBuild())
                 .CombineWith(frameworks, (_, v) => _
+                    .SetProject(v.project)
                     .SetOutput(ArtifactsDirectory / v.framework)
                     .SetFramework(v.framework))
             );
         });
+
+
 
     Target Download => _ => _
         .Executes(() =>
@@ -181,3 +184,4 @@ class Build : NukeBuild
 
     public static int Main() => Execute<Build>(x => x.Compile);
 }
+
