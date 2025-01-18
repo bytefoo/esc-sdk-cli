@@ -20,7 +20,7 @@ using static Nuke.Common.IO.HttpTasks;
 
 [GitHubActions(
     "ubuntu-latest",
-    GitHubActionsImage.Ubuntu2204,
+    GitHubActionsImage.WindowsLatest,
     FetchDepth = 0,
     //OnPushBranchesIgnore = new[] {"main"},
     OnPushBranches = new[] {"main"},
