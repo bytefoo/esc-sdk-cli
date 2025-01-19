@@ -45,7 +45,7 @@ public class UnitTest1
         });
         escConfig.RemoveEnvironment();
         escConfig.Init();
-        var path = "AppSettings_Infrastructure_ClientPortal";
+        var path = "AppSettings_Infrastructure_Application1";
         escConfig.Set(new List<(string path, string value, bool isSecret)>
         {
             ($"{path}_SomeValue1", "someValue1", false),
@@ -65,7 +65,7 @@ public class UnitTest1
         });
         escConfig.RemoveEnvironment();
         escConfig.Init();
-        path = "AppSettings_Infrastructure_DocumentApi";
+        path = "AppSettings_Infrastructure_Application2";
         escConfig.Set(new List<(string path, string value, bool isSecret)>
         {
             ($"{path}_SomeValue1", "someValue1", false),
