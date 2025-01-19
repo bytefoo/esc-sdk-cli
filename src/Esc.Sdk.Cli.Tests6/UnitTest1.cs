@@ -28,8 +28,8 @@ public class UnitTest1
     {
         var escPath = "C:\\Users\\dbeattie\\.pulumi\\bin\\esc.exe";
         
-        const string orgName = "jetlinx";
-        var projectName = "Infrastructure";
+        const string orgName = "orgName";
+        var projectName = "projectName";
         const string envName = "test";
 
         var Name = "biz-solutions";
