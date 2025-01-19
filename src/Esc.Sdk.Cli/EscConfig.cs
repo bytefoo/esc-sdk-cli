@@ -1,23 +1,21 @@
-﻿using EasyCaching.Core;
-using EasyCaching.Disk;
-using System;
-using System.Collections.Generic;using System.Data.Common;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Security;
 using System.Text;
 using System.Text.Json;
-using EasyCaching.Serialization.SystemTextJson;
+using EasyCaching.Core;
 using EasyCaching.Core.Serialization;
-using Microsoft.Extensions.Logging;
+using EasyCaching.Disk;
+using EasyCaching.Serialization.SystemTextJson;
 
 namespace Esc.Sdk.Cli
 {
-    public class EscConfig : IEscConfig
+    public class EscConfig
     {
-        private readonly EscOptions _options;
         private readonly IEasyCachingProvider _cachingProvider;
+        private readonly EscOptions _options;
 
         public EscConfig() : this(new EscOptions())
         {
@@ -29,17 +27,219 @@ namespace Esc.Sdk.Cli
 
             var diskOptions = new DiskOptions
             {
-                DBConfig = new DiskDbOptions() 
+                DBConfig = new DiskDbOptions
                 {
-                    BasePath = Path.Join(Path.GetTempPath(), nameof(EscConfig)),
+                    BasePath = Path.Join(Path.GetTempPath(), nameof(EscConfig))
                 }
             };
 
             var defaultJsonSerializer = new DefaultJsonSerializer("disk", new JsonSerializerOptions());
             var easyCachingSerializers = new List<IEasyCachingSerializer> { defaultJsonSerializer };
-           
-            _cachingProvider = new DefaultDiskCachingProvider("disk", easyCachingSerializers,  diskOptions, null);
-            
+
+            _cachingProvider = new DefaultDiskCachingProvider("disk", easyCachingSerializers, diskOptions, null);
+        }
+
+        //esc env init
+        public void Init()
+        {
+            Init(_options.OrgName, _options.ProjectName, _options.EnvironmentName);
+        }
+
+        public void Init(string environmentName)
+        {
+            Init(_options.OrgName, _options.ProjectName, environmentName);
+        }
+
+        public void Init(string projectName, string environmentName)
+        {
+            Init(_options.OrgName, projectName, environmentName);
+        }
+
+        public void Init(string orgName, string projectName, string environmentName)
+        {
+            var arguments = BuildCommand("env init", orgName, projectName, environmentName);
+            var process = GetProcess(arguments);
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        //esc env remove environment
+        public void RemoveEnvironment()
+        {
+            RemoveEnvironment(_options.OrgName, _options.ProjectName, _options.EnvironmentName);
+        }
+
+        public void RemoveEnvironment(string environmentName)
+        {
+            RemoveEnvironment(_options.OrgName, _options.ProjectName, environmentName);
+        }
+
+        public void RemoveEnvironment(string projectName, string environmentName)
+        {
+            RemoveEnvironment(_options.OrgName, projectName, environmentName);
+        }
+
+        public void RemoveEnvironment(string orgName, string projectName, string environmentName)
+        {
+            var arguments = BuildCommand("env rm", orgName, projectName, environmentName, null, null, false, true);
+            var process = GetProcess(arguments);
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        //esc env remove value
+        public void RemoveValue(string path)
+        {
+            RemoveValue(_options.OrgName, _options.ProjectName, _options.EnvironmentName, path);
+        }
+
+        public void RemoveValue(string environmentName, string path)
+        {
+            RemoveValue(_options.OrgName, _options.ProjectName, environmentName, path);
+        }
+
+        public void RemoveValue(string projectName, string environmentName, string path)
+        {
+            RemoveValue(_options.OrgName, projectName, environmentName, path);
+        }
+
+        public void RemoveValue(string orgName, string projectName, string environmentName, string path)
+        {
+            var arguments = BuildCommand("env rm", orgName, projectName, environmentName, path, null, false, true);
+            var process = GetProcess(arguments);
+
+            process.Start();
+            process.WaitForExit();
+        }
+
+        //esc env set
+        public void Set(List<(string path, string value, bool isSecret)> values)
+        {
+            foreach (var t in values)
+            {
+                Set(t.path, t.value, t.isSecret);
+            }
+        }
+
+        public void Set(List<(string projectName, string environmentName, string path, string value, bool isSecret)> values)
+        {
+            foreach (var t in values)
+            {
+                Set(t.projectName, t.environmentName, t.path, t.value, t.isSecret);
+            }
+        }
+
+        public void Set(List<(string environmentName, string path, string value, bool isSecret)> values)
+        {
+            foreach (var t in values)
+            {
+                Set(t.environmentName, t.path, t.value, t.isSecret);
+            }
+        }
+
+        public void Set(List<(string orgName, string projectName, string environmentName, string path, string value, bool isSecret)> values)
+        {
+            foreach (var t in values)
+            {
+                Set(t.orgName, t.projectName, t.environmentName, t.path, t.value, t.isSecret);
+            }
+        }
+
+        public void Set(string path, string value, bool isSecret = false)
+        {
+            Set(_options.OrgName, _options.ProjectName, _options.EnvironmentName, path, value, isSecret);
+        }
+
+        public void Set(string environmentName, string path, string value,
+            bool isSecret = false)
+        {
+            Set(_options.OrgName, _options.ProjectName, environmentName, path, value, isSecret);
+        }
+
+        public void Set(string projectName, string environmentName, string path, string value,
+            bool isSecret = false)
+        {
+            Set(_options.OrgName, projectName, environmentName, path, value, isSecret);
+        }
+
+        public void Set(string orgName, string projectName, string environmentName, string path, string value,
+            bool isSecret = false)
+        {
+            var arguments = BuildCommand("env set", orgName, projectName, environmentName, path, value, isSecret);
+            var process = GetProcess(arguments);
+            process.Start();
+            process.WaitForExit();
+        }
+
+        public List<string> List(string projectFilter = null)
+        {
+            var process = GetProcess($"env ls {(projectFilter == null ? "" : $"-p {projectFilter}")}"
+                .Trim());
+            process.Start();
+            var output = process.StandardOutput.ReadToEnd();
+            var successfulExit =
+                process.WaitForExit((int)TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
+
+            if (!successfulExit)
+            {
+                throw new InvalidOperationException("Esc process timed out.");
+            }
+
+            return output.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
+        }
+
+        public string BuildCommand(
+            string command,
+            string orgName, string projectName, string environmentName,
+            string path = null,
+            string value = null,
+            bool isSecret = false,
+            bool skipConfirmation = false)
+        {
+            orgName ??= _options.OrgName;
+            projectName ??= _options.ProjectName;
+            environmentName ??= _options.EnvironmentName;
+
+            if (string.IsNullOrEmpty(orgName))
+            {
+                throw new ArgumentNullException(nameof(orgName), "Organization name cannot be null or empty.");
+            }
+
+            if (string.IsNullOrEmpty(projectName))
+            {
+                throw new ArgumentNullException(nameof(projectName), "Project name cannot be null or empty.");
+            }
+
+            if (string.IsNullOrEmpty(environmentName))
+            {
+                throw new ArgumentNullException(nameof(environmentName), "Environment name cannot be null or empty.");
+            }
+
+            var arguments = new StringBuilder($"{command} {orgName}/{projectName}/{environmentName}");
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                arguments.Append($" {path}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                arguments.Append($" {value}");
+            }
+
+            if (isSecret)
+            {
+                arguments.Append(" --secret");
+            }
+
+            if (skipConfirmation)
+            {
+                arguments.Append(" --yes");
+            }
+
+            return arguments.ToString().Trim();
         }
 
         public void Load()
@@ -58,40 +258,6 @@ namespace Esc.Sdk.Cli
             {
                 throw new InvalidOperationException("An error occurred while fetching Esc configuration.", ex);
             }
-        }
-
-        public void Set(List<(string Path, string Value, bool IsSecret)> values)
-        {
-            foreach (var tuple in values)
-            {
-                Set(tuple.Path, tuple.Value, tuple.IsSecret);
-            }
-        }
-
-        public void Set(string path, string value, bool isSecret = false)
-        {
-            var process =
-                GetProcess(
-                    $"env set {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName} {path} {value} {(isSecret ? "--secret" : "")}");
-            process.Start();
-            process.WaitForExit();
-        }
-
-        public void Remove(List<string> paths)
-        {
-            foreach (var path in paths)
-            {
-                Remove(paths);
-            }
-        }
-
-        public void Remove(string path)
-        {
-            var process =
-                GetProcess(
-                    $"env rm {_options.OrgName}/{_options.ProjectName}/{_options.EnvironmentName} {path}");
-            process.Start();
-            process.WaitForExit();
         }
 
         internal string InnerLoadRaw()
@@ -114,6 +280,7 @@ namespace Esc.Sdk.Cli
             {
                 return cacheValue.Value;
             }
+
             var config = InnerLoadRawEsc();
             _cachingProvider.Set(cacheKey, config, _options.CacheExpiration);
 
@@ -129,7 +296,7 @@ namespace Esc.Sdk.Cli
 
             var output = process.StandardOutput.ReadToEnd();
             var successfulExit =
-                process.WaitForExit((int) TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
+                process.WaitForExit((int)TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
 
             if (!successfulExit)
             {
@@ -165,7 +332,7 @@ namespace Esc.Sdk.Cli
                     RedirectStandardError = true,
                     StandardErrorEncoding = Encoding.UTF8,
                     StandardOutputEncoding = Encoding.UTF8,
-                    EnvironmentVariables = {["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken}
+                    EnvironmentVariables = { ["PULUMI_ACCESS_TOKEN"] = _options.PulumiAccessToken }
                 }
             };
 
