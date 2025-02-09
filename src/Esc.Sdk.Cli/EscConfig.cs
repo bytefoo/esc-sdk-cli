@@ -14,6 +14,7 @@ namespace Esc.Sdk.Cli
 {
     public class EscConfig
     {
+        private static readonly string[] ValidValues = { "string", "dotenv", "json", "detailed" };
         private readonly IEasyCachingProvider _cachingProvider;
         private readonly EscOptions _options;
 
@@ -62,6 +63,40 @@ namespace Esc.Sdk.Cli
 
             process.Start();
             process.WaitForExit();
+        }
+
+        //esc env get
+        public string Get(string path, string value = "string", bool isSecret = false)
+        {
+            return Get(_options.OrgName, _options.ProjectName, _options.EnvironmentName, path, value, isSecret);
+        }
+
+        public string Get(string environmentName, string path, string value = "string", bool isSecret = false)
+        {
+            return Get(_options.OrgName, _options.ProjectName, environmentName, path, value, isSecret);
+        }
+
+        public string Get(string projectName, string environmentName, string path, string value = "string",
+            bool isSecret = false)
+        {
+            return Get(_options.OrgName, projectName, environmentName, path, value, isSecret);
+        }
+
+        public string Get(string orgName, string projectName, string environmentName, string path,
+            string value = "string", bool isSecret = false)
+        {
+            var arguments = BuildCommand("env get", orgName, projectName, environmentName, path, value, isSecret);
+            var process = GetProcess(arguments);
+            process.Start();
+            var output = process.StandardOutput.ReadToEnd();
+            var successfulExit = process.WaitForExit((int)TimeSpan.FromSeconds(_options.Timeout + 2).TotalMilliseconds);
+
+            if (!successfulExit)
+            {
+                throw new InvalidOperationException("Esc process timed out.");
+            }
+
+            return output.Trim();
         }
 
         //esc env remove environment
@@ -118,33 +153,28 @@ namespace Esc.Sdk.Cli
         public void Set(List<(string path, string value, bool isSecret)> values)
         {
             foreach (var t in values)
-            {
                 Set(t.path, t.value, t.isSecret);
-            }
         }
 
-        public void Set(List<(string projectName, string environmentName, string path, string value, bool isSecret)> values)
+        public void Set(
+            List<(string projectName, string environmentName, string path, string value, bool isSecret)> values)
         {
             foreach (var t in values)
-            {
                 Set(t.projectName, t.environmentName, t.path, t.value, t.isSecret);
-            }
         }
 
         public void Set(List<(string environmentName, string path, string value, bool isSecret)> values)
         {
             foreach (var t in values)
-            {
                 Set(t.environmentName, t.path, t.value, t.isSecret);
-            }
         }
 
-        public void Set(List<(string orgName, string projectName, string environmentName, string path, string value, bool isSecret)> values)
+        public void Set(
+            List<(string orgName, string projectName, string environmentName, string path, string value, bool isSecret)>
+                values)
         {
             foreach (var t in values)
-            {
                 Set(t.orgName, t.projectName, t.environmentName, t.path, t.value, t.isSecret);
-            }
         }
 
         public void Set(string path, string value, bool isSecret = false)
@@ -190,6 +220,7 @@ namespace Esc.Sdk.Cli
             return output.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
         }
 
+
         public string BuildCommand(
             string command,
             string orgName, string projectName, string environmentName,
@@ -224,6 +255,43 @@ namespace Esc.Sdk.Cli
                 arguments.Append($" {path}");
             }
 
+            switch (command)
+            {
+                case "env get":
+                    AppendGetCommandArguments(arguments, value, isSecret);
+                    break;
+                case "env set":
+                    AppendSetCommandArguments(arguments, value, isSecret);
+                    break;
+                case "env rm":
+                    AppendRemoveCommandArguments(arguments, skipConfirmation);
+                    break;
+            }
+
+            return arguments.ToString().Trim();
+        }
+
+        private void AppendGetCommandArguments(StringBuilder arguments, string value, bool isSecret)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                if (!ValidValues.Contains(value))
+                {
+                    throw new ArgumentException(
+                        $"Invalid value: {value}. Allowed values are: {string.Join(", ", ValidValues)}");
+                }
+
+                arguments.Append($" --value {value}");
+            }
+
+            if (isSecret)
+            {
+                arguments.Append(" --show-secrets");
+            }
+        }
+
+        private void AppendSetCommandArguments(StringBuilder arguments, string value, bool isSecret)
+        {
             if (!string.IsNullOrWhiteSpace(value))
             {
                 arguments.Append($" {value}");
@@ -233,14 +301,16 @@ namespace Esc.Sdk.Cli
             {
                 arguments.Append(" --secret");
             }
+        }
 
+        private void AppendRemoveCommandArguments(StringBuilder arguments, bool skipConfirmation)
+        {
             if (skipConfirmation)
             {
                 arguments.Append(" --yes");
             }
-
-            return arguments.ToString().Trim();
         }
+
 
         public void Load()
         {

@@ -61,7 +61,9 @@ namespace Esc.Sdk.Cli
         internal string GetEscExecutable()
         {
             if (EscPath != null)
+            {
                 return EscPath;
+            }
 
             var searchPath = GetSearchPath();
 
@@ -85,8 +87,10 @@ namespace Esc.Sdk.Cli
             Trace.WriteLine($"Using '{fullEscExePath}' as esc executable.");
 
             if (!File.Exists(fullEscExePath))
+            {
                 throw new FileNotFoundException(
                     "Esc executable was not found. Please specify the full path via the options.", fullEscExePath);
+            }
 
             return fullEscExePath;
         }
@@ -98,11 +102,15 @@ namespace Esc.Sdk.Cli
 
             //if running an Azure Function, in Azure, return null
             if (!string.IsNullOrEmpty(websiteInstanceId))
+            {
                 return null;
+            }
 
             //if running an Azure Function local, return the AzureWebJobsScriptRoot
             if (!string.IsNullOrEmpty(azureWebJobsScriptRoot))
+            {
                 return azureWebJobsScriptRoot;
+            }
 
             return GetEntryAssemblyLocation() ?? Directory.GetCurrentDirectory();
         }
@@ -121,13 +129,13 @@ namespace Esc.Sdk.Cli
         /// </summary>
         public static OsPlatformType GetOsPlatform()
         {
-#if !NET35
             //https://github.com/dotnet/runtime/issues/21660#issuecomment-633628590
             // For compatibility reasons with Mono, PlatformID.Unix is returned on MacOSX. PlatformID.MacOSX
             // is hidden from the editor and shouldn't be used.
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
                 return OsPlatformType.Osx;
-#endif
+            }
 
             var os = Environment.OSVersion;
             var pid = os.Platform;
