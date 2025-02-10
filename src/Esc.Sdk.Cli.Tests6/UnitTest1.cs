@@ -46,6 +46,7 @@ public class UnitTest1
             PulumiAccessToken = Environment.GetEnvironmentVariable("PULUMI_ACCESS_TOKEN"),
             UseCache = false
         });
+        
         escConfig.RemoveEnvironment();
         escConfig.Init();
         var path = "AppSettings_Infrastructure_Application1";

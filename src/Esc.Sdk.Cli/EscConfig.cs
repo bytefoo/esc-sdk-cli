@@ -66,24 +66,23 @@ namespace Esc.Sdk.Cli
         }
 
         //esc env get
-        public string Get(string path, string value = "string", bool isSecret = false)
+        public string Get(string path, bool isSecret = false, string value = null)
         {
-            return Get(_options.OrgName, _options.ProjectName, _options.EnvironmentName, path, value, isSecret);
+            return Get(_options.OrgName, _options.ProjectName, _options.EnvironmentName, path, isSecret, value);
         }
 
-        public string Get(string environmentName, string path, string value = "string", bool isSecret = false)
+        public string Get(string environmentName, string path, bool isSecret = false, string value = null)
         {
-            return Get(_options.OrgName, _options.ProjectName, environmentName, path, value, isSecret);
+            return Get(_options.OrgName, _options.ProjectName, environmentName, path, isSecret, value);
         }
 
-        public string Get(string projectName, string environmentName, string path, string value = "string",
-            bool isSecret = false)
+        public string Get(string projectName, string environmentName, string path, bool isSecret = false,
+            string value = null)
         {
-            return Get(_options.OrgName, projectName, environmentName, path, value, isSecret);
+            return Get(_options.OrgName, projectName, environmentName, path, isSecret, value);
         }
 
-        public string Get(string orgName, string projectName, string environmentName, string path,
-            string value = "string", bool isSecret = false)
+        public string Get(string orgName, string projectName, string environmentName, string path, bool isSecret = false, string value = null)
         {
             var arguments = BuildCommand("env get", orgName, projectName, environmentName, path, value, isSecret);
             var process = GetProcess(arguments);
@@ -258,7 +257,7 @@ namespace Esc.Sdk.Cli
             switch (command)
             {
                 case "env get":
-                    AppendGetCommandArguments(arguments, value, isSecret);
+                    AppendGetCommandArguments(arguments, value ?? "string", isSecret);
                     break;
                 case "env set":
                     AppendSetCommandArguments(arguments, value, isSecret);
