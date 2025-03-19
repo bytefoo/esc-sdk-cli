@@ -1,6 +1,6 @@
 # Esc.Sdk.Cli
 
-based on: https://github.com/Azure/AppConfiguration-DotnetProvider
+based on: https://github.com/envkey/envkey-dotnet
 
 ```
 
