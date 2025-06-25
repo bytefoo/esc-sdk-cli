@@ -411,9 +411,14 @@ namespace Esc.Sdk.Cli
         internal Dictionary<string, string> InnerLoad()
         {
             var config = InnerLoadRaw();
-            var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(config);
+            var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(config);
 
-            return dict;
+            // Convert all values to string
+            var stringDict = dict.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value?.ToString() ?? string.Empty);
+
+            return stringDict;
         }
 
         internal static void PatchEnvironmentVariables(Dictionary<string, string> config, bool forceUpdate)
