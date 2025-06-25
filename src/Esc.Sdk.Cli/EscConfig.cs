@@ -310,7 +310,6 @@ namespace Esc.Sdk.Cli
             }
         }
 
-
         public void Load()
         {
             Load(false);
