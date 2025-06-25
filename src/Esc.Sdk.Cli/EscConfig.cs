@@ -410,15 +410,52 @@ namespace Esc.Sdk.Cli
 
         internal Dictionary<string, string> InnerLoad()
         {
-            var config = InnerLoadRaw();
-            var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(config);
+            var config = InnerLoadRaw(); // Assume this returns a JSON string
+            try
+            {
+                var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(config);
+                if (dict == null)
+                {
+                    return new Dictionary<string, string>();
+                }
 
-            // Convert all values to string
-            var stringDict = dict.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value?.ToString() ?? string.Empty);
+                var stringDict = new Dictionary<string, string>();
+                foreach (var kvp in dict)
+                {
+                    switch (kvp.Value.ValueKind)
+                    {
+                        case JsonValueKind.String:
+                            stringDict[kvp.Key] = kvp.Value.GetString() ?? string.Empty;
+                            break;
+                        case JsonValueKind.Number:
+                            stringDict[kvp.Key] = kvp.Value.GetDouble()
+                                .ToString(System.Globalization.CultureInfo.InvariantCulture);
+                            break;
+                        case JsonValueKind.True:
+                            stringDict[kvp.Key] = "true";
+                            break;
+                        case JsonValueKind.False:
+                            stringDict[kvp.Key] = "false";
+                            break;
+                        case JsonValueKind.Null:
+                            stringDict[kvp.Key] = string.Empty;
+                            break;
+                        case JsonValueKind.Object:
+                        case JsonValueKind.Array:
+                            throw new InvalidOperationException(
+                                $"Invalid JSON value for key '{kvp.Key}': Objects and arrays are not allowed.");
+                        default:
+                            throw new InvalidOperationException(
+                                $"Unsupported JSON value kind for key '{kvp.Key}': {kvp.Value.ValueKind}");
+                    }
+                }
 
-            return stringDict;
+                return stringDict;
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidOperationException("Failed to deserialize configuration.", ex);
+            }
         }
 
         internal static void PatchEnvironmentVariables(Dictionary<string, string> config, bool forceUpdate)
