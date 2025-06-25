@@ -219,7 +219,6 @@ namespace Esc.Sdk.Cli
             return output.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
         }
 
-
         public string BuildCommand(
             string command,
             string orgName, string projectName, string environmentName,
