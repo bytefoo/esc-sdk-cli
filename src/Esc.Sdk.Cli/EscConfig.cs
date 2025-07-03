@@ -219,6 +219,7 @@ namespace Esc.Sdk.Cli
             return output.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
         }
 
+
         public string BuildCommand(
             string command,
             string orgName, string projectName, string environmentName,
@@ -308,6 +309,7 @@ namespace Esc.Sdk.Cli
                 arguments.Append(" --yes");
             }
         }
+
 
         public void Load()
         {
