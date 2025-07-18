@@ -91,7 +91,9 @@ class Build : NukeBuild
     Target Download => _ => _
         .Executes(() =>
         {
-            const string version = "v0.11.1";
+            //https://github.com/pulumi/esc/releases/download/v0.14.3/esc-v0.14.3-linux-arm64.tar.gz
+
+            const string version = "v0.14.3";
             const string baseUrl = $"https://get.pulumi.com/esc/releases/esc-{version}";
 
             List<string> operatingSystems =
@@ -101,33 +103,42 @@ class Build : NukeBuild
                 "darwin"
             ];
 
+            List<string> architectures =
+            [
+                "x64",
+                "arm64"
+            ];
+
             foreach (var operatingSystem in operatingSystems)
             {
-                var extension = operatingSystem == "windows" ? "zip" : "tar.gz";
-
-                var url = $"{baseUrl}-{operatingSystem}-x64.{extension}";
-                var filename = $"esc-{version}-{operatingSystem}-x64.{extension}";
-
-                Log.Information("url: {0} filename: {1}", url, filename);
-
-                AbsolutePath releaseTempFilename = Path.Combine(TemporaryDirectory, filename);
-                HttpDownloadFile(url, releaseTempFilename, clientConfigurator: settings =>
+                foreach (var architecture in architectures)
                 {
-                    settings.Timeout = TimeSpan.FromSeconds(15);
-                    return settings;
-                });
+                    var extension = operatingSystem == "windows" ? "zip" : "tar.gz";
 
-                var unCompressDirectory = TemporaryDirectory / operatingSystem;
-                releaseTempFilename.UncompressTo(unCompressDirectory);
+                    var url = $"{baseUrl}-{operatingSystem}-{architecture}.{extension}";
+                    var filename = $"esc-{version}-{operatingSystem}-{architecture}.{extension}";
 
-                unCompressDirectory.GlobFiles("**/esc*").ForEach(file =>
-                {
-                    var contentFilesDirectoryName = operatingSystem == "windows"
-                        ? "win64"
-                        : $"{operatingSystem}64";
+                    Log.Information("url: {0} filename: {1}", url, filename);
 
-                    file.Move(RootDirectory / "contentFiles" / contentFilesDirectoryName / file.Name);
-                });
+                    AbsolutePath releaseTempFilename = Path.Combine(TemporaryDirectory, filename);
+                    HttpDownloadFile(url, releaseTempFilename, clientConfigurator: settings =>
+                    {
+                        settings.Timeout = TimeSpan.FromSeconds(15);
+                        return settings;
+                    });
+
+                    var unCompressDirectory = TemporaryDirectory / operatingSystem / architecture;
+                    releaseTempFilename.UncompressTo(unCompressDirectory);
+
+                    unCompressDirectory.GlobFiles("**/esc*").ForEach(file =>
+                    {
+                        var contentFilesDirectoryName = operatingSystem == "windows"
+                            ? $"win-{architecture}"
+                            : $"{operatingSystem}-{architecture}";
+
+                        file.Move(RootDirectory / "contentFiles" / contentFilesDirectoryName / file.Name);
+                    });
+                }
             }
         });
 

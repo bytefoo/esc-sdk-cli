@@ -66,18 +66,19 @@ namespace Esc.Sdk.Cli
             }
 
             var searchPath = GetSearchPath();
-
+            var architecture = GetArchitecture();
+            
             string escExecutable;
             switch (GetOsPlatform())
             {
                 case OsPlatformType.Windows:
-                    escExecutable = "esc_win64.exe";
+                    escExecutable = $"esc_win-{architecture}.exe";
                     break;
                 case OsPlatformType.Linux:
-                    escExecutable = "esc_linux64";
+                    escExecutable = $"esc_linux-{architecture}";
                     break;
                 case OsPlatformType.Osx:
-                    escExecutable = "esc_darwin64";
+                    escExecutable = $"esc_darwin-{architecture}";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -88,6 +89,30 @@ namespace Esc.Sdk.Cli
 
             if (!File.Exists(fullEscExePath))
             {
+                // Fallback to legacy naming if the new architecture-specific file doesn't exist
+                string legacyExecutable;
+                switch (GetOsPlatform())
+                {
+                    case OsPlatformType.Windows:
+                        legacyExecutable = "esc_win64.exe";
+                        break;
+                    case OsPlatformType.Linux:
+                        legacyExecutable = "esc_linux64";
+                        break;
+                    case OsPlatformType.Osx:
+                        legacyExecutable = "esc_darwin64";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                
+                var legacyPath = Path.Combine(searchPath, legacyExecutable);
+                if (File.Exists(legacyPath))
+                {
+                    Trace.WriteLine($"Architecture-specific executable not found. Using legacy path '{legacyPath}'.");
+                    return legacyPath;
+                }
+                
                 throw new FileNotFoundException(
                     "Esc executable was not found. Please specify the full path via the options.", fullEscExePath);
             }
@@ -145,15 +170,37 @@ namespace Esc.Sdk.Cli
                 case PlatformID.Win32S:
                 case PlatformID.Win32Windows:
                 case PlatformID.WinCE:
-
                     return OsPlatformType.Windows;
                 case PlatformID.Unix:
-
                     return OsPlatformType.Linux;
-
                 default:
-
                     throw new PlatformNotSupportedException($"'{pid} is not supported.");
+            }
+        }
+
+        /// <summary>
+        /// Gets the current system architecture as a string.
+        /// </summary>
+        /// <returns>"x64" for 64-bit Intel/AMD or "arm64" for 64-bit ARM.</returns>
+        private static string GetArchitecture()
+        {
+            switch (RuntimeInformation.ProcessArchitecture)
+            {
+                case Architecture.Arm64:
+                    return "arm64";
+                case Architecture.X64:
+                    return "x64";
+                case Architecture.X86:
+                    // Fallback to x64 for 32-bit processes on 64-bit Windows
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        return "x64";
+                    }
+                    throw new PlatformNotSupportedException("32-bit (x86) architecture is not supported.");
+                case Architecture.Arm:
+                    throw new PlatformNotSupportedException("32-bit ARM architecture is not supported.");
+                default:
+                    throw new PlatformNotSupportedException($"Architecture {RuntimeInformation.ProcessArchitecture} is not supported.");
             }
         }
     }
