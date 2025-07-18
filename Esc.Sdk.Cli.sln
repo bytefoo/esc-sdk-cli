@@ -7,12 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.cspr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Esc.Sdk.Cli", "src\Esc.Sdk.Cli\Esc.Sdk.Cli.csproj", "{960B58CE-8A72-4E32-BBA0-90CFEEC89012}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_SolutionItems", "_SolutionItems", "{C49DD74B-E4DF-4C5A-903C-DFD6F7C99BC7}"
-	ProjectSection(SolutionItems) = preProject
-		Esc.nuspec = Esc.nuspec
-		README_esc.md = README_esc.md
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esc.Sdk.Cli.Tests6", "src\Esc.Sdk.Cli.Tests6\Esc.Sdk.Cli.Tests6.csproj", "{C7963059-98DC-4669-9E70-C5A921624DDE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esc.Sdk.Cli.Tests8", "src\Esc.Sdk.Cli.Tests8\Esc.Sdk.Cli.Tests8.csproj", "{FB1E9000-A4A1-4A64-86C4-7CCD916643AC}"

@@ -31,7 +31,13 @@
   
 	<files>
 		<file src="README_esc.md" target="README.md" />
-		<!-- Include all platform-specific binaries with a wildcard -->
-		<file src="contentFiles\**\esc*" target="contentFiles\any\any\esc\" />
+		<!-- x64 architecture -->
+		<file src="contentFiles\win-x64\esc.exe" target="contentFiles\any\any\esc\esc_win-x64.exe" />
+		<file src="contentFiles\linux-x64\esc" target="contentFiles\any\any\esc\esc_linux-x64" />
+		<file src="contentFiles\darwin-x64\esc" target="contentFiles\any\any\esc\esc_darwin-x64" />
+		<!-- arm64 architecture -->
+		<file src="contentFiles\win-arm64\esc.exe" target="contentFiles\any\any\esc\esc_win-arm64.exe" />
+		<file src="contentFiles\linux-arm64\esc" target="contentFiles\any\any\esc\esc_linux-arm64" />
+		<file src="contentFiles\darwin-arm64\esc" target="contentFiles\any\any\esc\esc_darwin-arm64" />
 	</files>
 </package>
