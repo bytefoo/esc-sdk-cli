@@ -67,7 +67,7 @@ namespace Esc.Sdk.Cli
 
             var searchPath = GetSearchPath();
             var architecture = GetArchitecture();
-            
+
             string escExecutable;
             switch (GetOsPlatform())
             {
@@ -84,35 +84,11 @@ namespace Esc.Sdk.Cli
                     throw new ArgumentOutOfRangeException();
             }
 
-            var fullEscExePath = Path.Combine(searchPath, escExecutable);
+            var fullEscExePath = Path.Combine(searchPath, "esc", escExecutable);
             Trace.WriteLine($"Using '{fullEscExePath}' as esc executable.");
 
             if (!File.Exists(fullEscExePath))
             {
-                // Fallback to legacy naming if the new architecture-specific file doesn't exist
-                string legacyExecutable;
-                switch (GetOsPlatform())
-                {
-                    case OsPlatformType.Windows:
-                        legacyExecutable = "esc_win64.exe";
-                        break;
-                    case OsPlatformType.Linux:
-                        legacyExecutable = "esc_linux64";
-                        break;
-                    case OsPlatformType.Osx:
-                        legacyExecutable = "esc_darwin64";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                
-                var legacyPath = Path.Combine(searchPath, legacyExecutable);
-                if (File.Exists(legacyPath))
-                {
-                    Trace.WriteLine($"Architecture-specific executable not found. Using legacy path '{legacyPath}'.");
-                    return legacyPath;
-                }
-                
                 throw new FileNotFoundException(
                     "Esc executable was not found. Please specify the full path via the options.", fullEscExePath);
             }
