@@ -19,15 +19,9 @@
 			</group>
 		</dependencies>
 		<contentFiles>
-			<!-- x64 architecture -->
-			<files include="any\any\esc_win-x64.exe" buildAction="none" copyToOutput="true" flatten="true" />
-			<files include="any\any\esc_linux-x64" buildAction="none" copyToOutput="true" flatten="true" />
-			<files include="any\any\esc_darwin-x64" buildAction="none" copyToOutput="true" flatten="true" />
-			<!-- arm64 architecture -->
-			<files include="any\any\esc_win-arm64.exe" buildAction="none" copyToOutput="true" flatten="true" />
-			<files include="any\any\esc_linux-arm64" buildAction="none" copyToOutput="true" flatten="true" />
-			<files include="any\any\esc_darwin-arm64" buildAction="none" copyToOutput="true" flatten="true" />
-		</contentFiles>
+			<!-- Include all platform-specific binaries in an 'esc' folder -->
+			<files include="any\any\esc\*" buildAction="None" copyToOutput="true" flatten="false" />
+		</contentFiles>		
 	</metadata>
 	
   <!--
@@ -37,13 +31,7 @@
   
 	<files>
 		<file src="README_esc.md" target="README.md" />
-		<!-- x64 architecture -->
-		<file src="contentFiles\win-x64\esc.exe" target="contentFiles\any\any\esc_win-x64.exe" />
-		<file src="contentFiles\linux-x64\esc" target="contentFiles\any\any\esc_linux-x64" />
-		<file src="contentFiles\darwin-x64\esc" target="contentFiles\any\any\esc_darwin-x64" />
-		<!-- arm64 architecture -->
-		<file src="contentFiles\win-arm64\esc.exe" target="contentFiles\any\any\esc_win-arm64.exe" />
-		<file src="contentFiles\linux-arm64\esc" target="contentFiles\any\any\esc_linux-arm64" />
-		<file src="contentFiles\darwin-arm64\esc" target="contentFiles\any\any\esc_darwin-arm64" />
+		<!-- Include all platform-specific binaries with a wildcard -->
+		<file src="contentFiles\**\esc*" target="contentFiles\any\any\esc\" />
 	</files>
 </package>
