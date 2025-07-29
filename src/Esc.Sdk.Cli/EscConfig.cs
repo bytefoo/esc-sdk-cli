@@ -332,14 +332,7 @@ namespace Esc.Sdk.Cli
 
         internal string InnerLoadRaw()
         {
-#if DEBUG
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (_options.UseCache.GetValueOrDefault(true))
-            {
-                return InnerLoadRawCache();
-            }
-#endif
-            return InnerLoadRawEsc();
+            return _options.UseCache.GetValueOrDefault(true) ? InnerLoadRawCache() : InnerLoadRawEsc();
         }
 
         internal string InnerLoadRawCache()
