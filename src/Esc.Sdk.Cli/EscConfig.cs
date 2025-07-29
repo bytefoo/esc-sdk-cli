@@ -26,16 +26,17 @@ namespace Esc.Sdk.Cli
         {
             _options = options;
 
-            var diskOptions = new DiskOptions
-            {
-                DBConfig = new DiskDbOptions
-                {
-                    BasePath = Path.Join(Path.GetTempPath(), nameof(EscConfig))
-                }
-            };
-
             var defaultJsonSerializer = new DefaultJsonSerializer("disk", new JsonSerializerOptions());
             var easyCachingSerializers = new List<IEasyCachingSerializer> { defaultJsonSerializer };
+
+            var diskOptions = new DiskOptions
+            {
+                    MaxRdSecond = 0,
+                    DBConfig = new DiskDbOptions
+                    {
+                            BasePath = Path.Join(Path.GetTempPath(), nameof(EscConfig))
+                    }
+            };
 
             _cachingProvider = new DefaultDiskCachingProvider("disk", easyCachingSerializers, diskOptions, null);
         }
